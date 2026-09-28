@@ -16,14 +16,11 @@ const googleSearchInput = document.getElementById('googleSearchInput');
 const googleSearchBtn = document.getElementById('googleSearchBtn');
 
 let originalImage = null;
-let currentImageUrl = null;
 
 if (imageInput) {
     imageInput.addEventListener('change', (e) => {
         const file = e.target.files[0];
         if (!file) return;
-
-        currentImageUrl = URL.createObjectURL(file);
 
         const reader = new FileReader();
         reader.onload = function(event) {
@@ -62,12 +59,13 @@ function generarPanelReconocimiento() {
     recContent.innerHTML = `
         <h4>✨ Identificación del Producto</h4>
         <div style="background: #1e293b; padding: 12px; border-radius: 6px; margin-top: 8px; font-size: 0.85rem;">
-            <p><strong>📸 Imagen lista para analizar</strong></p>
-            <p style="color: #94a3b8; margin: 4px 0 10px 0;">Usa el buscador visual para encontrar el producto exacto en internet:</p>
+            <p><strong>📸 Imagen lista para optimizar</strong></p>
+            <p style="color: #94a3b8; margin: 4px 0 10px 0;">Usa el buscador web con texto para encontrar prendas similares rápidamente:</p>
             
-            <a href="https://images.google.com/searchbyimage?image_url=${encodeURIComponent(currentImageUrl)}" target="_blank" class="primary-btn" style="display: block; text-align: center; text-decoration: none; padding: 10px; font-size: 0.85rem; background: #2563eb; color: white; border-radius: 6px; margin-bottom: 12px;">
-                <i class="fa-solid fa-camera"></i> Buscar Producto en Google (Lens)
-            </a>
+            <div style="display: flex; gap: 8px; margin-bottom: 12px;">
+                <input type="text" id="autoSearchInput" placeholder="Ej: Camiseta oversize negra..." style="flex: 1; padding: 8px; background: #0f172a; color: white; border: 1px solid #334155; border-radius: 4px; font-size: 0.85rem;">
+                <button onclick="buscarEnGoogleWeb()" style="padding: 8px 12px; background: #2563eb; color: white; border: none; border-radius: 4px; cursor: pointer;"><i class="fa-solid fa-magnifying-glass"></i></button>
+            </div>
 
             <p><strong>📝 Plantilla de Descripción Comercial:</strong></p>
             <textarea id="descTextarea" style="width: 100%; height: 80px; background: #0f172a; color: #cbd5e1; border: 1px solid #334155; border-radius: 4px; padding: 8px; margin-top: 4px; font-size: 0.85rem; resize: none;">Artículo en excelente estado, cuidado y sin uso reciente. Diseño ideal y de gran calidad. Talla estándar (consulta medidas si lo necesitas). ¡Envío rápido y seguro! ✨</textarea>
@@ -95,6 +93,12 @@ window.copiarDescripcionPersonalizada = function() {
     textarea.select();
     navigator.clipboard.writeText(textarea.value);
     alert("¡Descripción copiada con éxito lista para pegar en Vinted o Wallapop!");
+};
+
+window.buscarEnGoogleWeb = function() {
+    const input = document.getElementById('autoSearchInput');
+    if (!input || !input.value.trim()) return;
+    window.open(`https://www.google.com/search?q=${encodeURIComponent(input.value.trim())}`, '_blank');
 };
 
 if (brightenBtn) {
