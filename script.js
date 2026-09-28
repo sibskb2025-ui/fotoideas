@@ -17,7 +17,7 @@ const googleSearchBtn = document.getElementById('googleSearchBtn');
 
 let originalImage = null;
 
-// --- 1. CARGA, ANÁLISIS AUTOMÁTICO Y EDICIÓN DE FOTOS ---
+// --- 1. CARGA, ANÁLISIS AUTOMÁTICO, CONSEJOS Y EDICIÓN DE FOTOS ---
 imageInput.addEventListener('change', (e) => {
     const file = e.target.files[0];
     if (!file) return;
@@ -70,6 +70,16 @@ function analizarImagenYGenerarAnuncio(img, fileName) {
             <button class="primary-btn" style="width: 100%; padding: 8px; font-size: 0.85rem;" onclick="copiarDescripcionPreset()">
                 <i class="fa-solid fa-copy"></i> Copiar Descripción
             </button>
+        </div>
+
+        <h4 style="margin-top: 15px;">💡 Consejos Pro para Vender Más</h4>
+        <div style="background: #1e293b; padding: 12px; border-radius: 6px; margin-top: 8px; font-size: 0.85rem; line-height: 1.4;">
+            <ul style="padding-left: 15px; color: #cbd5e1; display: flex; flex-direction: column; gap: 6px;">
+                <li><strong>Fondo limpio:</strong> Usa el botón "Cuadrar Formato Vinted" para centrar la prenda sobre fondo blanco; los compradores descartan fotos desordenadas.</li>
+                <li><strong>Medidas clave:</strong> Añade siempre en el texto de tu anuncio el ancho de sisa a sisa y el largo total para evitar preguntas repetitivas.</li>
+                <li><strong>Precio inteligente:</strong> Pon un precio un 10% o 15% más alto de lo que deseas para dejar margen a las ofertas y regateos típicos de la plataforma.</li>
+                <li><strong>Envío exprés:</strong> Indica en tu perfil que envías en menos de 24 horas; eso genera confianza y acelera la compra.</li>
+            </ul>
         </div>
     `;
 }
