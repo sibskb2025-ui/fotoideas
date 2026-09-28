@@ -1,25 +1,75 @@
-function analizarImagenYGenerarAnuncio(img, fileName) {
-    const nombreLimpio = fileName.replace(/\.[^/.]+$/, "").replace(/[-_]/g, " ");
+const imageInput = document.getElementById('imageInput');
+const imageCanvas = document.getElementById('imageCanvas');
+const ctx = imageCanvas.getContext('2d');
 
-    googleSearchInput.value = nombreLimpio;
+const placeholderText = document.getElementById('placeholderText');
+const toolsSection = document.getElementById('toolsSection');
+const exportSection = document.getElementById('exportSection');
 
-    // Generamos una descripción más dinámica basada en el nombre del archivo/producto
-    const descripcionIdeal = `¡Hola! Vendo este/a ${nombreLimpio} en excelente estado. Usado muy pocas veces, cuidado y sin desperfectos. Ideal para combinar y de gran calidad. Talla estándar (puedes pedirme medidas sin compromiso). ¡Hago envíos rápidos y seguros! ✨`;
+const brightenBtn = document.getElementById('brightenBtn');
+const contrastBtn = document.getElementById('contrastBtn');
+const squareBtn = document.getElementById('squareBtn');
+const downloadBtn = document.getElementById('downloadBtn');
+const recContent = document.getElementById('recContent');
 
+const googleSearchInput = document.getElementById('googleSearchInput');
+const googleSearchBtn = document.getElementById('googleSearchBtn');
+
+let originalImage = null;
+let currentImageUrl = null;
+
+// --- 1. CARGA DE IMAGEN Y RECONOCIMIENTO VISUAL ---
+imageInput.addEventListener('change', (e) => {
+    const file = e.target.files[0];
+    if (!file) return;
+
+    // Creamos una URL temporal de la imagen para la búsqueda visual
+    currentImageUrl = URL.createObjectURL(file);
+
+    const reader = new FileReader();
+    reader.onload = function(event) {
+        const img = new Image();
+        img.onload = function() {
+            originalImage = img;
+            drawImageToCanvas(img);
+            
+            placeholderText.style.display = 'none';
+            imageCanvas.style.display = 'block';
+
+            toolsSection.style.opacity = '1';
+            toolsSection.style.pointerEvents = 'auto';
+            exportSection.style.display = 'flex';
+
+            generarPanelReconocimiento(img);
+        }
+        img.src = event.target.result;
+    }
+    reader.readAsDataURL(file);
+});
+
+function drawImageToCanvas(img) {
+    imageCanvas.width = img.width;
+    imageCanvas.height = img.height;
+    ctx.clearRect(0, 0, imageCanvas.width, imageCanvas.height);
+    ctx.drawImage(img, 0, 0);
+}
+
+function generarPanelReconocimiento(img) {
     recContent.innerHTML = `
-        <h4>✨ Análisis de la Prenda</h4>
+        <h4>✨ Identificación del Producto</h4>
         <div style="background: #1e293b; padding: 12px; border-radius: 6px; margin-top: 8px; font-size: 0.85rem;">
-            <p><strong>🏷️ Producto detectado:</strong> <span style="color: #38bdf8; text-transform: capitalize;">${nombreLimpio}</span></p>
-            <p><strong>📐 Dimensiones:</strong> ${img.width} x ${img.height} px</p>
-            <br>
+            <p><strong>📸 Imagen lista para analizar</strong></p>
+            <p style="color: #94a3b8; margin: 4px 0 10px 0;">No dependemos del nombre del archivo. Usa el buscador visual para encontrar el producto exacto en internet:</p>
+            
             <a href="https://images.google.com/searchbyimage?image_url=${encodeURIComponent(currentImageUrl)}" target="_blank" class="primary-btn" style="display: block; text-align: center; text-decoration: none; padding: 10px; font-size: 0.85rem; background: #2563eb; color: white; border-radius: 6px; margin-bottom: 12px;">
-                <i class="fa-solid fa-camera"></i> Reconocer Producto (Google Lens)
+                <i class="fa-solid fa-camera"></i> Buscar Producto en Google (Lens)
             </a>
-            <p><strong>📝 Descripción Pro para Vinted / Wallapop:</strong></p>
-            <textarea id="descTextarea" style="width: 100%; height: 80px; background: #0f172a; color: #cbd5e1; border: 1px solid #334155; border-radius: 4px; padding: 8px; margin-top: 4px; font-size: 0.85rem; resize: none;">${descripcionIdeal}</textarea>
+
+            <p><strong>📝 Plantilla de Descripción Comercial:</strong></p>
+            <textarea id="descTextarea" style="width: 100%; height: 80px; background: #0f172a; color: #cbd5e1; border: 1px solid #334155; border-radius: 4px; padding: 8px; margin-top: 4px; font-size: 0.85rem; resize: none;">Artículo en excelente estado, cuidado y sin uso reciente. Diseño ideal y de gran calidad. Talla estándar (consulta medidas si lo necesitas). ¡Envío rápido y seguro! ✨</textarea>
             <br>
             <button class="primary-btn" style="width: 100%; padding: 8px; font-size: 0.85rem; margin-top: 8px;" onclick="copiarDescripcionPersonalizada()">
-                <i class="fa-solid fa-copy"></i> Copiar Descripción Perfecta
+                <i class="fa-solid fa-copy"></i> Copiar Descripción
             </button>
         </div>
 
@@ -42,3 +92,77 @@ window.copiarDescripcionPersonalizada = function() {
     navigator.clipboard.writeText(textarea.value);
     alert("¡Descripción copiada con éxito lista para pegar en Vinted o Wallapop!");
 };
+
+// Botón: Iluminación Pro
+brightenBtn.addEventListener('click', () => {
+    if (!originalImage) return;
+    drawImageToCanvas(originalImage);
+    const imageData = ctx.getImageData(0, 0, imageCanvas.width, imageCanvas.height);
+    const data = imageData.data;
+    const adjustment = 35;
+    for (let i = 0; i < data.length; i += 4) {
+        data[i]     = Math.min(255, data[i] + adjustment);     
+        data[i + 1] = Math.min(255, data[i + 1] + adjustment); 
+        data[i + 2] = Math.min(255, data[i + 2] + adjustment); 
+    }
+    ctx.putImageData(imageData, 0, 0);
+});
+
+// Botón: Contraste Ideal
+contrastBtn.addEventListener('click', () => {
+    if (!originalImage) return;
+    drawImageToCanvas(originalImage);
+    const imageData = ctx.getImageData(0, 0, imageCanvas.width, imageCanvas.height);
+    const data = imageData.data;
+    const factor = 1.25; 
+    for (let i = 0; i < data.length; i += 4) {
+        data[i]     = Math.min(255, Math.max(0, factor * (data[i] - 128) + 128));
+        data[i + 1] = Math.min(255, Math.max(0, factor * (data[i + 1] - 128) + 128));
+        data[i + 2] = Math.min(255, Math.max(0, factor * (data[i + 2] - 128) + 128));
+    }
+    ctx.putImageData(imageData, 0, 0);
+});
+
+// Botón: Cuadrar Formato Vinted (1:1 con fondo blanco)
+squareBtn.addEventListener('click', () =>.
+    if (!originalImage) return;
+    const size = Math.max(originalImage.width, originalImage.height);
+    const tempCanvas = document.createElement('canvas');
+    tempCanvas.width = size;
+    tempCanvas.height = size;
+    const tempCtx = tempCanvas.getContext('2d');
+
+    tempCtx.fillStyle = '#FFFFFF';
+    tempCtx.fillRect(0, 0, size, size);
+
+    const x = (size - originalImage.width) / 2;
+    const y = (size - originalImage.height) / 2;
+    tempCtx.drawImage(imageCanvas, x, y);
+
+    imageCanvas.width = size;
+    imageCanvas.height = size;
+    ctx.drawImage(tempCanvas, 0, 0);
+});
+
+// Botón: Descargar Foto Optimizada
+downloadBtn.addEventListener('click', () => {
+    if (!originalImage) return;
+    const link = document.createElement('a');
+    link.download = 'foto-vinted-optimizada.jpg';
+    link.href = imageCanvas.toDataURL('image/jpeg', 0.92);
+    link.click();
+});
+
+// --- 2. BÚSQUEDA DIRECTA EN GOOGLE ---
+googleSearchBtn.addEventListener('click', () => {
+    const query = googleSearchInput.value.trim();
+    if (!query) return;
+
+    const url = `https://www.google.com/search?q=${encodeURIComponent(query)}`;
+    window.open(url, '_blank');
+
+    recContent.innerHTML = `
+        <h4>🌐 Búsqueda en Google</h4>
+        <p>Se ha abierto una pestaña en tu navegador con la búsqueda de: "<strong>${query}</strong>".</p>
+    `;
+});
