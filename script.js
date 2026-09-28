@@ -18,42 +18,47 @@ const googleSearchBtn = document.getElementById('googleSearchBtn');
 let originalImage = null;
 let currentImageUrl = null;
 
-// --- 1. CARGA DE IMAGEN Y RECONOCIMIENTO VISUAL ---
-imageInput.addEventListener('change', (e) => {
-    const file = e.target.files[0];
-    if (!file) return;
+if (imageInput) {
+    imageInput.addEventListener('change', (e) => {
+        const file = e.target.files[0];
+        if (!file) return;
 
-    currentImageUrl = URL.createObjectURL(file);
+        currentImageUrl = URL.createObjectURL(file);
 
-    const reader = new FileReader();
-    reader.onload = function(event) {
-        const img = new Image();
-        img.onload = function() {
-            originalImage = img;
-            drawImageToCanvas(img);
-            
-            placeholderText.style.display = 'none';
-            imageCanvas.style.display = 'block';
+        const reader = new FileReader();
+        reader.onload = function(event) {
+            const img = new Image();
+            img.onload = function() {
+                originalImage = img;
+                drawImageToCanvas(img);
+                
+                if (placeholderText) placeholderText.style.display = 'none';
+                if (imageCanvas) imageCanvas.style.display = 'block';
 
-            toolsSection.style.opacity = '1';
-            toolsSection.style.pointerEvents = 'auto';
-            exportSection.style.display = 'flex';
+                if (toolsSection) {
+                    toolsSection.style.opacity = '1';
+                    toolsSection.style.pointerEvents = 'auto';
+                }
+                if (exportSection) exportSection.style.display = 'flex';
 
-            generarPanelReconocimiento(img);
+                generarPanelReconocimiento();
+            }
+            img.src = event.target.result;
         }
-        img.src = event.target.result;
-    }
-    reader.readAsDataURL(file);
-});
+        reader.readAsDataURL(file);
+    });
+}
 
 function drawImageToCanvas(img) {
+    if (!imageCanvas) return;
     imageCanvas.width = img.width;
     imageCanvas.height = img.height;
     ctx.clearRect(0, 0, imageCanvas.width, imageCanvas.height);
     ctx.drawImage(img, 0, 0);
 }
 
-function generarPanelReconocimiento(img) {
+function generarPanelReconocimiento() {
+    if (!recContent) return;
     recContent.innerHTML = `
         <h4>✨ Identificación del Producto</h4>
         <div style="background: #1e293b; padding: 12px; border-radius: 6px; margin-top: 8px; font-size: 0.85rem;">
@@ -75,10 +80,10 @@ function generarPanelReconocimiento(img) {
         <h4 style="margin-top: 15px;">💡 Consejos Pro para Vender Más</h4>
         <div style="background: #1e293b; padding: 12px; border-radius: 6px; margin-top: 8px; font-size: 0.85rem; line-height: 1.4;">
             <ul style="padding-left: 15px; color: #cbd5e1; display: flex; flex-direction: column; gap: 6px;">
-                <li><strong>Fondo limpio:</strong> Usa el botón "Cuadrar Formato Vinted" para centrar la prenda sobre fondo blanco; los compradores descartan fotos desordenadas.</li>
-                <li><strong>Medidas clave:</strong> Añade siempre en el texto de tu anuncio el ancho de sisa a sisa y el largo total para evitar preguntas repetitivas.</li>
-                <li><strong>Precio inteligente:</strong> Pon un precio un 10% o 15% más alto de lo que deseas para dejar margen a las ofertas y regateos típicos de la plataforma.</li>
-                <li><strong>Envío exprés:</strong> Indica en tu perfil que envías en menos de 24 horas; eso genera confianza y acelera la compra.</li>
+                <li><strong>Fondo limpio:</strong> Usa el botón "Formato Vinted" para centrar la prenda sobre fondo blanco.</li>
+                <li><strong>Medidas clave:</strong> Añade siempre en el texto el ancho de sisa y el largo total.</li>
+                <li><strong>Precio inteligente:</strong> Pon un precio un 10% o 15% más alto para dejar margen al regateo.</li>
+                <li><strong>Envío exprés:</strong> Indica que envías en menos de 24 horas para generar confianza.</li>
             </ul>
         </div>
     `;
@@ -92,76 +97,76 @@ window.copiarDescripcionPersonalizada = function() {
     alert("¡Descripción copiada con éxito lista para pegar en Vinted o Wallapop!");
 };
 
-// Botón: Iluminación Pro
-brightenBtn.addEventListener('click', () => {
-    if (!originalImage) return;
-    drawImageToCanvas(originalImage);
-    const imageData = ctx.getImageData(0, 0, imageCanvas.width, imageCanvas.height);
-    const data = imageData.data;
-    const adjustment = 35;
-    for (let i = 0; i < data.length; i += 4) {
-        data[i]     = Math.min(255, data[i] + adjustment);     
-        data[i + 1] = Math.min(255, data[i + 1] + adjustment); 
-        data[i + 2] = Math.min(255, data[i + 2] + adjustment); 
-    }
-    ctx.putImageData(imageData, 0, 0);
-});
+if (brightenBtn) {
+    brightenBtn.addEventListener('click', () => {
+        if (!originalImage) return;
+        drawImageToCanvas(originalImage);
+        const imageData = ctx.getImageData(0, 0, imageCanvas.width, imageCanvas.height);
+        const data = imageData.data;
+        const adjustment = 35;
+        for (let i = 0; i < data.length; i += 4) {
+            data[i]     = Math.min(255, data[i] + adjustment);     
+            data[i + 1] = Math.min(255, data[i + 1] + adjustment); 
+            data[i + 2] = Math.min(255, data[i + 2] + adjustment); 
+        }
+        ctx.putImageData(imageData, 0, 0);
+    });
+}
 
-// Botón: Contraste Ideal
-contrastBtn.addEventListener('click', () => {
-    if (!originalImage) return;
-    drawImageToCanvas(originalImage);
-    const imageData = ctx.getImageData(0, 0, imageCanvas.width, imageCanvas.height);
-    const data = imageData.data;
-    const factor = 1.25; 
-    for (let i = 0; i < data.length; i += 4) {
-        data[i]     = Math.min(255, Math.max(0, factor * (data[i] - 128) + 128));
-        data[i + 1] = Math.min(255, Math.max(0, factor * (data[i + 1] - 128) + 128));
-        data[i + 2] = Math.min(255, Math.max(0, factor * (data[i + 2] - 128) + 128));
-    }
-    ctx.putImageData(imageData, 0, 0);
-});
+if (contrastBtn) {
+    contrastBtn.addEventListener('click', () => {
+        if (!originalImage) return;
+        drawImageToCanvas(originalImage);
+        const imageData = ctx.getImageData(0, 0, imageCanvas.width, imageCanvas.height);
+        const data = imageData.data;
+        const factor = 1.25; 
+        for (let i = 0; i < data.length; i += 4) {
+            data[i]     = Math.min(255, Math.max(0, factor * (data[i] - 128) + 128));
+            data[i + 1] = Math.min(255, Math.max(0, factor * (data[i + 1] - 128) + 128));
+            data[i + 2] = Math.min(255, Math.max(0, factor * (data[i + 2] - 128) + 128));
+        }
+        ctx.putImageData(imageData, 0, 0);
+    });
+}
 
-// Botón: Cuadrar Formato Vinted (1:1 con fondo blanco)
-squareBtn.addEventListener('click', () => {
-    if (!originalImage) return;
-    const size = Math.max(originalImage.width, originalImage.height);
-    const tempCanvas = document.createElement('canvas');
-    tempCanvas.width = size;
-    tempCanvas.height = size;
-    const tempCtx = tempCanvas.getContext('2d');
+if (squareBtn) {
+    squareBtn.addEventListener('click', () => {
+        if (!originalImage) return;
+        const size = Math.max(originalImage.width, originalImage.height);
+        const tempCanvas = document.createElement('canvas');
+        tempCanvas.width = size;
+        tempCanvas.height = size;
+        const tempCtx = tempCanvas.getContext('2d');
 
-    tempCtx.fillStyle = '#FFFFFF';
-    tempCtx.fillRect(0, 0, size, size);
+        tempCtx.fillStyle = '#FFFFFF';
+        tempCtx.fillRect(0, 0, size, size);
 
-    const x = (size - originalImage.width) / 2;
-    const y = (size - originalImage.height) / 2;
-    tempCtx.drawImage(imageCanvas, x, y);
+        const x = (size - originalImage.width) / 2;
+        const y = (size - originalImage.height) / 2;
+        tempCtx.drawImage(imageCanvas, x, y);
 
-    imageCanvas.width = size;
-    imageCanvas.height = size;
-    ctx.drawImage(tempCanvas, 0, 0);
-});
+        imageCanvas.width = size;
+        imageCanvas.height = size;
+        ctx.drawImage(tempCanvas, 0, 0);
+    });
+}
 
-// Botón: Descargar Foto Optimizada
-downloadBtn.addEventListener('click', () => {
-    if (!originalImage) return;
-    const link = document.createElement('a');
-    link.download = 'foto-vinted-optimizada.jpg';
-    link.href = imageCanvas.toDataURL('image/jpeg', 0.92);
-    link.click();
-});
+if (downloadBtn) {
+    downloadBtn.addEventListener('click', () => {
+        if (!originalImage) return;
+        const link = document.createElement('a');
+        link.download = 'foto-vinted-optimizada.jpg';
+        link.href = imageCanvas.toDataURL('image/jpeg', 0.92);
+        link.click();
+    });
+}
 
-// --- 2. BÚSQUEDA DIRECTA EN GOOGLE ---
-googleSearchBtn.addEventListener('click', () => {
-    const query = googleSearchInput.value.trim();
-    if (!query) return;
+if (googleSearchBtn) {
+    googleSearchBtn.addEventListener('click', () => {
+        const query = googleSearchInput.value.trim();
+        if (!query) return;
 
-    const url = `https://www.google.com/search?q=${encodeURIComponent(query)}`;
-    window.open(url, '_blank');
-
-    recContent.innerHTML = `
-        <h4>🌐 Búsqueda en Google</h4>
-        <p>Se ha abierto una pestaña en tu navegador con la búsqueda de: "<strong>${query}</strong>".</p>
-    `;
-});
+        const url = `https://www.google.com/search?q=${encodeURIComponent(query)}`;
+        window.open(url, '_blank');
+    });
+}
