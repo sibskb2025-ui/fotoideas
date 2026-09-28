@@ -23,7 +23,6 @@ imageInput.addEventListener('change', (e) => {
     const file = e.target.files[0];
     if (!file) return;
 
-    // Creamos una URL temporal de la imagen para la búsqueda visual
     currentImageUrl = URL.createObjectURL(file);
 
     const reader = new FileReader();
@@ -59,7 +58,7 @@ function generarPanelReconocimiento(img) {
         <h4>✨ Identificación del Producto</h4>
         <div style="background: #1e293b; padding: 12px; border-radius: 6px; margin-top: 8px; font-size: 0.85rem;">
             <p><strong>📸 Imagen lista para analizar</strong></p>
-            <p style="color: #94a3b8; margin: 4px 0 10px 0;">No dependemos del nombre del archivo. Usa el buscador visual para encontrar el producto exacto en internet:</p>
+            <p style="color: #94a3b8; margin: 4px 0 10px 0;">Usa el buscador visual para encontrar el producto exacto en internet:</p>
             
             <a href="https://images.google.com/searchbyimage?image_url=${encodeURIComponent(currentImageUrl)}" target="_blank" class="primary-btn" style="display: block; text-align: center; text-decoration: none; padding: 10px; font-size: 0.85rem; background: #2563eb; color: white; border-radius: 6px; margin-bottom: 12px;">
                 <i class="fa-solid fa-camera"></i> Buscar Producto en Google (Lens)
@@ -124,7 +123,7 @@ contrastBtn.addEventListener('click', () => {
 });
 
 // Botón: Cuadrar Formato Vinted (1:1 con fondo blanco)
-squareBtn.addEventListener('click', () =>.
+squareBtn.addEventListener('click', () => {
     if (!originalImage) return;
     const size = Math.max(originalImage.width, originalImage.height);
     const tempCanvas = document.createElement('canvas');
